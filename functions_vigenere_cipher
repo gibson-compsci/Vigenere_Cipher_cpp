@@ -1,0 +1,147 @@
+/* 
+ * CSE 232 Project #5
+ * File:   functions-05.cpp
+ * Author: Cameron Gibson
+ *      Vigenere Cipher
+ *          -checks if a string is all lowercase
+ *          -creates a vector of key shifts based on a string
+ *          -encrypts a string based on the key shifts
+ *          -decrypts a string based on the key shifts
+ *
+ * Created on October 3, 2014, 7:55 PM
+ */
+
+
+//includes string and vector
+#include<string>
+using std::string;
+#include<vector>
+using std::vector;
+
+
+/* 
+ * This function returns a boolean value based on if the entire string consists
+ * of only lowercase letters
+ */
+bool all_lower(string s){
+    bool test=true;
+    for (auto c: s){
+        if (c<'a' || c>'z')
+            test= false;    
+    }
+    return test;
+}
+
+
+/*
+ * This function creates a vector of integers, which represent a key shift,
+ * based on the string that is given.
+ * Returns a boolean, which states whether or not the key shift vector was
+ * created.
+ */
+bool key_shifts(string key, vector<int> & shifts){
+    //initialize default bool
+    bool complete=true;
+    //check if string parameter consists of only lowercase letters
+    if (all_lower(key)==0)
+        complete=false;
+    else{
+        //clear the given vector and add the shift keys based on the 
+        //given string
+        shifts.clear();
+        for (auto c : key){
+            shifts.push_back(c-'a');
+        }
+    }
+    return complete;
+}
+
+
+/*
+ * This functions encrypts a string based on a vector, which contains key shifts
+ * Returns a new string.
+ */
+string encrypt(string s, vector<int> & shifts){
+    //initialize variables
+    string new_string="";
+    int i=0;
+    
+    //does the vector have key shift values in it?
+    if (shifts.size()!=0){
+        
+        //for char in string, shift the value and get the new char
+        for (auto c:s){
+            c=tolower(c);
+            
+            //checks if variable i needs to be reset so that it reuses the
+            //shift values in the vector
+            if (i==shifts.size()){
+                i=0;
+            }
+            
+            //checks if the char is a lowercase letter so that it can be shifted
+            if (c<'a' or c>'z')
+                //not lower letter, no shift
+                new_string.push_back(c);
+            else if (c+shifts.at(i)<='z'){
+                //shift
+                new_string.push_back(c+shifts.at(i));
+                ++i;
+            }
+            else{
+                //shift
+                new_string.push_back((c+shifts.at(i))-26);
+                ++i;
+            }
+        }
+    }
+    else
+        new_string=s;
+    
+    return new_string;
+}
+
+
+/*
+ * This functions decrypts a string based on a vector, which contains key shifts
+ * Returns a new string.
+ */
+string decrypt(string s, vector<int> & shifts){
+    //initialize variables
+    string new_string="";
+    int i=0;
+    
+    //does the vector have key shift values in it? 
+    if (shifts.size()!=0){
+        
+        //for char in string, shift the value and get the new char
+        for (auto c:s){
+            c=tolower(c);
+            
+            //checks if variable i needs to be reset so that it reuses the
+            //shift values in the vector
+            if (i==shifts.size()){
+                i=0;
+            }
+            
+            //checks if the char is a lowercase letter so that it can be shifted
+            if (c<'a' or c>'z')
+                //not lower letter, no shift
+                new_string.push_back(c);
+            else if (c-shifts.at(i)>='a'){
+                //shift
+                new_string.push_back(c-shifts.at(i));
+                ++i;
+            }
+            else{
+                //shift
+                new_string.push_back((c-shifts.at(i))+26);
+                ++i;
+            }
+        }
+    }
+    else
+        new_string=s;
+    
+    return new_string;
+}
